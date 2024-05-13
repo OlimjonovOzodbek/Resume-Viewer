@@ -15,5 +15,18 @@ namespace User.Infrastructure.Persistence
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         public DbSet<UserModel> Users { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<UserModel>().HasData(new UserModel()
+            {
+                Name = "SuperAdmin",
+                Email = "SuperAdmin@admin.com",
+                Password = "SuperAdmin1",
+                Role = "SuperAdmin"
+            });
+        }
     }
 }
