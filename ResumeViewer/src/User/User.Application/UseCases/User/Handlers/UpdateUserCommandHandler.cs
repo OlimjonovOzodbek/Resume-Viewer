@@ -26,25 +26,35 @@ namespace User.Application.UseCases.User.Handlers
 
             if (res != null)
             {
-                res.Name = request.Name;
-                res.Email = request.Email;
-                res.Password = request.Password;
+                var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == request.Email);
+                if (user != null)
+                {
+                    res.Name = request.Name;
+                    res.Email = request.Email;
+                    res.Password = request.Password;
 
-                _context.Users.Update(res);
-                await _context.SaveChangesAsync(cancellationToken);
+                    _context.Users.Update(res);
+                    await _context.SaveChangesAsync(cancellationToken);
+
+                    return new ResponceModel
+                    {
+                        Message = "Changes saved!",
+                        Status = 200,
+                        isSuccess = true
+                    };
+                }
 
                 return new ResponceModel
                 {
-                    Message = "Changes saved!",
-                    Status = 200,
-                    isSuccess = true
+                    Message = "Such email already exists",
+                    Status = 409,
                 };
             }
 
             return new ResponceModel
             {
-                Message = "Error while updating!",
-                Status = 401
+                Message = "Not found!",
+                Status = 404
             };
         }
     }

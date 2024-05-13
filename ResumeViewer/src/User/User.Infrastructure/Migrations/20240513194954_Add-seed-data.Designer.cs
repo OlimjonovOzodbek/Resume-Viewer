@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using User.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using User.Infrastructure.Persistence;
 namespace User.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240513194954_Add-seed-data")]
+    partial class Addseeddata
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,7 +57,7 @@ namespace User.Infrastructure.Migrations
                             Id = new Guid("12345678-1234-1234-1234-1234567890ab"),
                             Email = "SuperAdmin@admin.com",
                             Name = "SuperAdmin",
-                            Password = "8e3df55a92106cbffa53d9bf2f3e4efe656a1e4c00be7dccd0ee3386064e3601",
+                            Password = "SuperAdmin1",
                             Role = "SuperAdmin"
                         });
                 });

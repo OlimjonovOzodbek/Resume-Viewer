@@ -14,6 +14,7 @@ using User.Domain.Entities.Models;
 using Microsoft.Extensions.Configuration;
 using System.Data;
 using System.Globalization;
+using System.Security.Cryptography;
 
 namespace User.Application.Services
 {
@@ -50,7 +51,7 @@ namespace User.Application.Services
                 {
                     Name = userDTO.Name,
                     Email = userDTO.Email,
-                    Password = userDTO.Password
+                    Password = HashPassword(userDTO.Password)
                 };
 
                 await _context.Users.AddAsync(userr);
@@ -83,7 +84,7 @@ namespace User.Application.Services
                 };
             }
 
-            if (user.Password != loginDTO.Password)
+            if (user.Password != HashPassword(loginDTO.Password))
             {
                 return new ResponceModel
                 {
@@ -121,6 +122,15 @@ namespace User.Application.Services
                 Status = 200,
                 isSuccess = true
             };
+        }
+
+        public static string HashPassword(string password)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+                return BitConverter.ToString(hashedBytes).Replace("-", "").ToLowerInvariant();
+            }
         }
     }
 }

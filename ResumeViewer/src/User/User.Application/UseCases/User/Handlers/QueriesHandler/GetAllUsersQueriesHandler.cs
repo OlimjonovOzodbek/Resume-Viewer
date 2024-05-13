@@ -9,7 +9,7 @@ using User.Application.Abstractions;
 using User.Application.UseCases.User.Queries;
 using User.Domain.Entities.Models;
 
-namespace User.Application.UseCases.User.QueriesHandler
+namespace User.Application.UseCases.User.Handlers.QueriesHandler
 {
     public class GetAllUsersQueriesHandler : IRequestHandler<GetAllUsersQuery, IEnumerable<UserModel>>
     {

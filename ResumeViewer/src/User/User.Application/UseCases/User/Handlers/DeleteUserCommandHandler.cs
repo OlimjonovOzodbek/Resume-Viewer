@@ -27,6 +27,8 @@ namespace User.Application.UseCases.User.Handlers
             {
                 _context.Users.Remove(res);
 
+                await _context.SaveChangesAsync(cancellationToken);
+
                 return new ResponceModel
                 {
                     Message = "User Deleted",
@@ -36,9 +38,8 @@ namespace User.Application.UseCases.User.Handlers
             }
             return new ResponceModel
             {
-                Message = "We couldnt delete",
-                Status = 200,
-                isSuccess = true
+                Message = "Not found!",
+                Status = 404
             };
         }
     }

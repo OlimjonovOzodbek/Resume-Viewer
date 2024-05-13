@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using User.Application.UseCases.User.Commands;
@@ -9,6 +10,7 @@ namespace User.API.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -19,6 +21,7 @@ namespace User.API.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "SuperAdmin")]
         public async Task<IEnumerable<UserModel>> GetAll()
         {
             var result = await _mediator.Send(new GetAllUsersQuery());
@@ -27,6 +30,7 @@ namespace User.API.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "SuperAdmin, Admin, User")]
         public async Task<UserModel> GetById(Guid id)
         {
             var result = await _mediator.Send(new GetUsersByIdQuery()
@@ -37,7 +41,17 @@ namespace User.API.Controllers
             return result;
         }
 
+        [HttpPatch]
+        [Authorize(Roles = "SuperAdmin")]
+        public async Task<ResponceModel> SetRole(SetRoleCommand request)
+        {
+            var result = await _mediator.Send(request);
+
+            return result;
+        }
+
         [HttpPut]
+        [Authorize(Roles = "SuperAdmin, Admin, User")]
         public async Task<ResponceModel> Update(UpdateUserCommand request)
         {
             var result = await _mediator.Send(request);
@@ -46,6 +60,7 @@ namespace User.API.Controllers
         }
 
         [HttpDelete]
+        [Authorize(Roles = "SuperAdmin, Admin, User")]
         public async Task<ResponceModel> Delete(DeleteUserCommand request)
         {
             var result = await _mediator.Send(request);
