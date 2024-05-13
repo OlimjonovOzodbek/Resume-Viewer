@@ -1,4 +1,9 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Text;
 using User.Application;
+using User.Application.Services;
 using User.Infrastructure;
 
 public class Program
@@ -12,9 +17,13 @@ public class Program
         builder.Services.AddApplication();
         builder.Services.AddInfrastructure(builder.Configuration);
 
+        builder.Services.AddScoped<IAuthService, AuthService>();
+
+
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
+
         builder.Services.AddSwaggerGen();
 
         var app = builder.Build();
@@ -27,6 +36,13 @@ public class Program
         }
 
         app.UseHttpsRedirection();
+
+        app.UseCors( options =>
+        {
+            options.AllowAnyHeader();
+            options.AllowAnyMethod();
+            options.AllowAnyOrigin();
+        });
 
         app.UseAuthorization();
 
