@@ -22,6 +22,7 @@ namespace User.Infrastructure.Persistence
 
             modelBuilder.Entity<UserModel>().HasData(new UserModel()
             {
+                Id = Guid.NewGuid(),
                 Name = "SuperAdmin",
                 Email = "SuperAdmin@admin.com",
                 Password = "SuperAdmin1",
