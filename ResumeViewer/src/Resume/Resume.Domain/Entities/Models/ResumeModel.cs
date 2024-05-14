@@ -13,7 +13,7 @@ namespace Resume.Domain.Entities.Models
         public Guid UserId { get; set; }
         public string Name { get; set; }
         public string Document { get; set; }
-        public string Status { get; set; }
+        public string Status { get; set; } = "none";
         public DateTime UploadDate { get; set; } = DateTime.UtcNow;
 
     }
