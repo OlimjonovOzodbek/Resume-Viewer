@@ -33,7 +33,7 @@ namespace Resume.Application.UseCases.Resume.Handlers.QueryHandlers
             {
                 var user = JsonConvert.DeserializeObject<UserModel>(await response.Content.ReadAsStringAsync());
 
-                var resume = await _context.Resumes.FirstOrDefaultAsync(x => x.UserId == user.Id);
+                var resume = await _context.Resumes.FirstOrDefaultAsync(x => x.UserId == user.Id && x.Id == request.ResumeId);
 
                 return resume;
             }
