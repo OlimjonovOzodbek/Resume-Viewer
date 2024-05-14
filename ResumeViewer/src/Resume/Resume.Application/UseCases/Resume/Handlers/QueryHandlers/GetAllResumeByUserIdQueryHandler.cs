@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -27,6 +28,8 @@ namespace Resume.Application.UseCases.Resume.Handlers.QueryHandlers
         public async Task<List<ResumeModel>> Handle(GetAllResumeByUserIdQuery request, CancellationToken cancellationToken)
         {
             var client = _httpClientFactory.CreateClient();
+
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", request.Token);
 
             var response = await client.GetAsync($"https://localhost:7264/api/User/GetById?id={request.UserId}");
 
