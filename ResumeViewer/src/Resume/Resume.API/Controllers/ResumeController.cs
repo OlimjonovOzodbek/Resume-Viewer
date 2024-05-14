@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Resume.Application.UseCases.Resume.Commands;
 using Resume.Application.UseCases.Resume.Queries;
 using Resume.Domain.Entities.Models;
 using System.Net.Http;
@@ -13,30 +14,74 @@ namespace Resume.API.Controllers
     public class ResumeController : ControllerBase
     {
         private readonly IMediator _mediatr;
-        private readonly IHttpClientFactory _httpClientFactory;
 
         public ResumeController(IMediator mediatr)
         {
             _mediatr = mediatr;
         }
 
-        [HttpGet]
-        public async Task<UserModel> GetByUserId(Guid userId)
+        [HttpPost]
+        public async Task<ResponseModel> CreateResume(CreateResumeCommand request)
         {
-            var client = _httpClientFactory.CreateClient();
+            var res = await _mediatr.Send(request);
 
-            var response = await client.GetAsync($"https://localhost:7264/api/User/GetById?id={userId}");
+            return res;
+        }
 
-            if (response.IsSuccessStatusCode)
-            {
-                var user = JsonConvert.DeserializeObject<UserModel>(await response.Content.ReadAsStringAsync());
+        [HttpPost]
+        public async Task<ResponseModel> UploadResume(UploadResumeCommand request)
+        {
+            var res = await _mediatr.Send(request);
 
-                var res = await _mediatr.Send(new GetResumeByUserIdQuery { UserId = userId });
-                
-                return user;
-            }
+            return res;
+        }
 
-            return new UserModel();
+        [HttpPatch]
+        public async Task<ResponseModel> SetStatus(SetStatusCommand request)
+        {
+            var res = await _mediatr.Send(request);
+
+            return res;
+        }
+
+        [HttpGet]
+        public async Task<List<ResumeModel>> GetAllResumeByUserId(Guid UserId)
+        {
+            var res = await _mediatr.Send(new GetAllResumeByUserIdQuery { UserId = UserId });
+
+            return res;
+        }
+
+        [HttpGet]
+        public async Task<List<ResumeModel>> GetAllResume()
+        {
+            var res = await _mediatr.Send(new GetAllResumeQuery());
+
+            return res;
+        }
+
+        [HttpGet]
+        public async Task<ResumeModel> GetById(Guid id)
+        {
+            var res = await _mediatr.Send(new GetResumeByIdQuery { ResumeId = id });
+
+            return res;
+        }
+
+        [HttpGet]
+        public async Task<ResumeModel> GetByUserId(Guid userId, Guid resumeId)
+        {
+            var res = await _mediatr.Send(new GetResumeByUserIdQuery { UserId = userId, ResumeId = resumeId });
+
+            return res;
+        }
+
+        [HttpDelete]
+        public async Task<ResponseModel> Delete(DeleteResumeCommand request)
+        {
+            var res = await _mediatr.Send(request);
+
+            return res;
         }
     }
 }
