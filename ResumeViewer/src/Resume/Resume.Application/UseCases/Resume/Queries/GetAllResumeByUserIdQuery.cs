@@ -11,5 +11,6 @@ namespace Resume.Application.UseCases.Resume.Queries
     public class GetAllResumeByUserIdQuery : IRequest<List<ResumeModel>>
     {
         public Guid UserId { get; set; }
+        public string Token { get; set; }
     }
 }

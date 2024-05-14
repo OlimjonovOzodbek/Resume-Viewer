@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -11,6 +12,7 @@ namespace Resume.API.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class ResumeController : ControllerBase
     {
         private readonly IMediator _mediatr;
@@ -21,6 +23,7 @@ namespace Resume.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "User")]
         public async Task<ResponseModel> CreateResume(CreateResumeCommand request)
         {
             var res = await _mediatr.Send(request);
@@ -29,6 +32,7 @@ namespace Resume.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "User")]
         public async Task<ResponseModel> UploadResume(UploadResumeCommand request)
         {
             var res = await _mediatr.Send(request);
@@ -37,6 +41,7 @@ namespace Resume.API.Controllers
         }
 
         [HttpPatch]
+        [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<ResponseModel> SetStatus(SetStatusCommand request)
         {
             var res = await _mediatr.Send(request);
@@ -45,14 +50,16 @@ namespace Resume.API.Controllers
         }
 
         [HttpGet]
-        public async Task<List<ResumeModel>> GetAllResumeByUserId(Guid UserId)
+        [Authorize(Roles = "User")]
+        public async Task<List<ResumeModel>> GetAllResumeByUserId(Guid UserId, string Token)
         {
-            var res = await _mediatr.Send(new GetAllResumeByUserIdQuery { UserId = UserId });
+            var res = await _mediatr.Send(new GetAllResumeByUserIdQuery { UserId = UserId, Token = Token });
 
             return res;
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<List<ResumeModel>> GetAllResume()
         {
             var res = await _mediatr.Send(new GetAllResumeQuery());
@@ -61,6 +68,7 @@ namespace Resume.API.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "User, Admin, SuperAdmin")]
         public async Task<ResumeModel> GetById(Guid id)
         {
             var res = await _mediatr.Send(new GetResumeByIdQuery { ResumeId = id });
@@ -69,6 +77,7 @@ namespace Resume.API.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin, SuperAdmin, User")]
         public async Task<ResumeModel> GetByUserId(Guid userId, Guid resumeId)
         {
             var res = await _mediatr.Send(new GetResumeByUserIdQuery { UserId = userId, ResumeId = resumeId });
@@ -77,6 +86,7 @@ namespace Resume.API.Controllers
         }
 
         [HttpDelete]
+        [Authorize(Roles = "User")]
         public async Task<ResponseModel> Delete(DeleteResumeCommand request)
         {
             var res = await _mediatr.Send(request);
