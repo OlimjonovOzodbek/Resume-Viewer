@@ -70,6 +70,16 @@ public class Program
             c.AddSecurityRequirement(securityRequirement);
         });
 
+        builder.Services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(policy =>
+            {
+                policy.AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowAnyOrigin();
+            });
+        });
+
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
@@ -81,14 +91,10 @@ public class Program
 
         app.UseHttpsRedirection();
 
+        app.UseCors();
+
         app.UseAuthentication();
 
-        app.UseCors( options =>
-        {
-            options.AllowAnyHeader();
-            options.AllowAnyMethod();
-            options.AllowAnyOrigin();
-        });
 
         app.UseAuthorization();
 

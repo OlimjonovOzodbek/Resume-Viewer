@@ -27,7 +27,7 @@ namespace User.Application.UseCases.User.Handlers
             if (res != null)
             {
                 var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == request.Email);
-                if (user != null)
+                if (user == null)
                 {
                     res.Name = request.Name;
                     res.Email = request.Email;

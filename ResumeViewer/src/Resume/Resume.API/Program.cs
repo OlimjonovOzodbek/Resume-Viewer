@@ -66,7 +66,15 @@ public class Program
             c.AddSecurityRequirement(securityRequirement);
         });
 
-        builder.Services.AddSwaggerGen();
+        builder.Services.AddCors( options =>
+        {
+            options.AddDefaultPolicy(policy =>
+            {
+                policy.AllowAnyHeader();
+                policy.AllowAnyMethod();
+                policy.AllowAnyOrigin();
+            });
+        });
 
         var app = builder.Build();
 
@@ -78,6 +86,8 @@ public class Program
         }
 
         app.UseHttpsRedirection();
+
+        app.UseCors();
 
         app.UseAuthentication();
 

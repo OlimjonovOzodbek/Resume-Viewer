@@ -12,5 +12,6 @@ namespace Resume.Application.UseCases.Resume.Commands
     {
         public Guid UserId { get; set; }
         public string Document { get; set; }
+        public string Token { get; set; }
     }
 }

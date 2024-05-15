@@ -25,20 +25,25 @@ namespace Resume.Application.UseCases.Resume.Handlers.QueryHandlers
 
         public async Task<ResumeModel> Handle(GetResumeByUserIdQuery request, CancellationToken cancellationToken)
         {
-            var client = _httpClientFactory.CreateClient();
-
-            var response = await client.GetAsync($"https://localhost:7264/api/User/GetById?id={request.UserId}");
-
-            if (response.IsSuccessStatusCode)
+            using (var client = new HttpClient())
             {
-                var user = JsonConvert.DeserializeObject<UserModel>(await response.Content.ReadAsStringAsync());
+                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + request.Token);
 
-                var resume = await _context.Resumes.FirstOrDefaultAsync(x => x.UserId == user.Id && x.Id == request.ResumeId);
+                HttpResponseMessage response = await client.GetAsync($"https://localhost:7264/api/User/GetById?id={request.UserId}");
 
-                return resume;
+                if (response.IsSuccessStatusCode)
+                {
+                    var user = JsonConvert.DeserializeObject<UserModel>(await response.Content.ReadAsStringAsync());
+
+                    var resume = await _context.Resumes.FirstOrDefaultAsync(x => x.UserId == user.Id && x.Id == request.ResumeId);
+
+                    return resume;
+                }
+                else
+                {
+                    return new ResumeModel();
+                }
             }
-
-            return new ResumeModel();
         }
     }
 }

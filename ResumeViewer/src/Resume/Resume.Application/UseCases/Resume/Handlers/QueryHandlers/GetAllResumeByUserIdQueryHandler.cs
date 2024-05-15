@@ -1,4 +1,4 @@
-using MediatR;
+﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Resume.Application.Abstractions;
@@ -27,22 +27,25 @@ namespace Resume.Application.UseCases.Resume.Handlers.QueryHandlers
 
         public async Task<List<ResumeModel>> Handle(GetAllResumeByUserIdQuery request, CancellationToken cancellationToken)
         {
-            var client = _httpClientFactory.CreateClient();
-
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", request.Token);
-
-            var response = await client.GetAsync($"https://localhost:7264/api/User/GetById?id={request.UserId}");
-
-            if (response.IsSuccessStatusCode)
+            using (var client = new HttpClient())
             {
-                var user = JsonConvert.DeserializeObject<UserModel>(await response.Content.ReadAsStringAsync(cancellationToken));
+                client.DefaultRequestHeaders.Add("Authorization","Bearer " + request.Token);
 
-                var userResumes = await _context.Resumes.Where(r => r.UserId == request.UserId).ToListAsync(cancellationToken);
+                HttpResponseMessage response = await client.GetAsync($"https://localhost:7264/api/User/GetById?id={request.UserId}");
 
-                return userResumes;
+                if (response.IsSuccessStatusCode)
+                {
+                    var user = JsonConvert.DeserializeObject<UserModel>(await response.Content.ReadAsStringAsync(cancellationToken));
+
+                    var userResumes = await _context.Resumes.Where(r => r.UserId == request.UserId).ToListAsync(cancellationToken);
+
+                    return userResumes;
+                }
+                else
+                {
+                    return [];
+                }
             }
-
-            return [];
         }
     }
 }
