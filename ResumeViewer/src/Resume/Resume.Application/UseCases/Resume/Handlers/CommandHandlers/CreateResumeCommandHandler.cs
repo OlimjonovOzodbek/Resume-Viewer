@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Resume.Application.Abstractions;
 using Resume.Application.UseCases.Resume.Commands;
@@ -24,37 +25,44 @@ namespace Resume.Application.UseCases.Resume.Handlers.CommandHandlers
 
         public async Task<ResponseModel> Handle(CreateResumeCommand request, CancellationToken cancellationToken)
         {
-            var client = _httpClientFactory.CreateClient();
-
-            var response = await client.GetAsync($"https://localhost:7264/api/User/GetById?id={request.UserId}");
-
-            if (response.IsSuccessStatusCode)
+            using (var client = new HttpClient())
             {
-                var user = JsonConvert.DeserializeObject<UserModel>(await response.Content.ReadAsStringAsync());
+                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + request.Token);
 
-                var resume = new ResumeModel
+                HttpResponseMessage response = await client.GetAsync($"https://localhost:7264/api/User/GetById?id={request.UserId}");
+
+                if (response.IsSuccessStatusCode)
                 {
-                    UserId = user.Id,
-                    Name = request.Document,
-                    Document = request.Document
-                };
+                    var user = JsonConvert.DeserializeObject<UserModel>(await response.Content.ReadAsStringAsync());
 
-                await _context.Resumes.AddAsync(resume);
-                await _context.SaveChangesAsync(cancellationToken);
+                    var resume = new ResumeModel
+                    {
+                        UserId = user.Id,
+                        Name = request.Document,
+                        Document = request.Document
+                    };
 
-                return new ResponseModel
+                    await _context.Resumes.AddAsync(resume);
+                    await _context.SaveChangesAsync(cancellationToken);
+
+                    return new ResponseModel
+                    {
+                        Message = "Resume created",
+                        Status = 201,
+                        isSuccess = true
+                    };
+                }
+                else
                 {
-                    Message = "Resume created",
-                    Status = 201,
-                    isSuccess = true
-                };
+                    return new ResponseModel
+                    {
+                        Message = "User not found!",
+                        Status = 404
+                    };
+                }
             }
 
-            return new ResponseModel
-            {
-                Message = "User not found!",
-                Status = 404
-            };
+
         }
     }
 }
