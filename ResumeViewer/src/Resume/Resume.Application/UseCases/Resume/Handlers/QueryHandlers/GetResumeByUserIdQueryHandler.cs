@@ -1,4 +1,6 @@
 using MediatR;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Resume.Application.Abstractions;
@@ -12,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Resume.Application.UseCases.Resume.Handlers.QueryHandlers
 {
-    public class GetResumeByUserIdQueryHandler : IRequestHandler<GetResumeByUserIdQuery, ResumeModel>
+    public class GetResumeByUserIdQueryHandler : IRequestHandler<GetResumeByUserIdQuery, IActionResult>
     {
         private readonly IResumeDbContext _context;
         private readonly IHttpClientFactory _httpClientFactory;
@@ -23,7 +25,7 @@ namespace Resume.Application.UseCases.Resume.Handlers.QueryHandlers
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<ResumeModel> Handle(GetResumeByUserIdQuery request, CancellationToken cancellationToken)
+        public async Task<IActionResult> Handle(GetResumeByUserIdQuery request, CancellationToken cancellationToken)
         {
             using (var client = new HttpClient())
             {
@@ -37,11 +39,35 @@ namespace Resume.Application.UseCases.Resume.Handlers.QueryHandlers
 
                     var resume = await _context.Resumes.FirstOrDefaultAsync(x => x.UserId == user.Id && x.Id == request.ResumeId);
 
-                    return resume;
+                    if (resume != null)
+                    {
+                        if (System.IO.File.Exists(resume.Document))
+                        {
+                            var memory = new MemoryStream();
+                            using (var stream = new FileStream(resume.Document, FileMode.Open))
+                            {
+                                await stream.CopyToAsync(memory, cancellationToken);
+                            }
+                            memory.Position = 0;
+
+                            return new FileStreamResult(memory, "application/pdf")
+                            {
+                                FileDownloadName = $"{resume.Name}.pdf"
+                            };
+                        }
+                        else
+                        {
+                            return new NotFoundResult();
+                        }
+                    }
+                    else
+                    {
+                        return new NotFoundResult();
+                    }
                 }
                 else
                 {
-                    return new ResumeModel();
+                    return new BadRequestResult();
                 }
             }
         }

@@ -22,9 +22,9 @@ namespace User.API.Controllers
 
         [HttpGet]
         [Authorize(Roles = "SuperAdmin")]
-        public async Task<IEnumerable<UserModel>> GetAll()
+        public async Task<IEnumerable<UserModel>> GetAll(int PageIndex, int Size)
         {
-            var result = await _mediator.Send(new GetAllUsersQuery());
+            var result = await _mediator.Send(new GetAllUsersQuery() { PageIndex = PageIndex, Size = Size});
 
             return result;
         }

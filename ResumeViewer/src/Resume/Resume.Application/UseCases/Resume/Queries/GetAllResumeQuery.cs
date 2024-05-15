@@ -10,5 +10,7 @@ namespace Resume.Application.UseCases.Resume.Queries
 {
     public class GetAllResumeQuery : IRequest<List<ResumeModel>>
     {
+        public int PageIndex { get; set; }
+        public int Size { get; set; }
     }
 }

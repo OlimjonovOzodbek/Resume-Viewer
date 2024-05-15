@@ -14,5 +14,7 @@ namespace Resume.Application.UseCases.Resume.Queries
         public string Exp { get; set; } = "";
         public string[] Skills { get; set; } = [];
         public string Job { get; set; } = "";
+        public int PageIndex { get; set; }
+        public int Size { get; set; }
     }
 }

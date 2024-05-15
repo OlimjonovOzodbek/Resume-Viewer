@@ -21,7 +21,11 @@ namespace User.Application.UseCases.User.Handlers.QueriesHandler
         }
         public async Task<IEnumerable<UserModel>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
         {
-            var res = await _context.Users.ToListAsync(cancellationToken);
+            var res = await _context.Users
+                .Skip(request.PageIndex)
+                .Take(request.Size)
+                .ToListAsync(cancellationToken);
+            
             return res;
         }
     }
