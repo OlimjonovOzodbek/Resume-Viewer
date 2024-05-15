@@ -51,38 +51,48 @@ namespace Resume.API.Controllers
 
         [HttpGet]
         [Authorize(Roles = "User,SuperAdmin")]
-        public async Task<List<ResumeModel>> GetAllResumeByUserId(Guid UserId, string Token)
+        public async Task<List<ResumeModel>> GetAllResumeByUserId(Guid UserId, string Token, int PageIndex, int Size)
         {
-            var res = await _mediatr.Send(new GetAllResumeByUserIdQuery { UserId = UserId, Token = Token });
+            var res = await _mediatr.Send(new GetAllResumeByUserIdQuery { UserId = UserId, Token = Token, PageIndex = PageIndex, Size = Size });
 
             return res;
         }
 
         [HttpGet]
         [Authorize(Roles = "Admin,SuperAdmin")]
-        public async Task<List<ResumeModel>> GetAllResume()
+        public async Task<List<ResumeModel>> GetAllResume(int PageIndex, int Size)
         {
-            var res = await _mediatr.Send(new GetAllResumeQuery());
+            var res = await _mediatr.Send(new GetAllResumeQuery() { PageIndex = PageIndex, Size = Size });
 
             return res;
         }
 
         [HttpGet]
         [Authorize(Roles = "User, Admin, SuperAdmin")]
-        public async Task<ResumeModel> GetById(Guid id)
+        public async Task<IActionResult> GetById(Guid id)
         {
-            var res = await _mediatr.Send(new GetResumeByIdQuery { ResumeId = id });
+            var result = await _mediatr.Send(new GetResumeByIdQuery { ResumeId = id });
 
-            return res;
+            if (result is FileStreamResult fileResult)
+            {
+                return fileResult;
+            }
+
+            return NotFound();
         }
 
         [HttpGet]
         [Authorize(Roles = "Admin, SuperAdmin, User")]
-        public async Task<ResumeModel> GetByUserId(Guid userId, Guid resumeId, string Token)
+        public async Task<IActionResult> GetByUserId(Guid userId, Guid resumeId, string Token)
         {
-            var res = await _mediatr.Send(new GetResumeByUserIdQuery { UserId = userId, ResumeId = resumeId, Token = Token });
+            var result = await _mediatr.Send(new GetResumeByUserIdQuery { UserId = userId, ResumeId = resumeId, Token = Token });
 
-            return res;
+            if (result is FileStreamResult fileResult)
+            {
+                return fileResult;
+            }
+
+            return NotFound();
         }
 
         [HttpDelete]

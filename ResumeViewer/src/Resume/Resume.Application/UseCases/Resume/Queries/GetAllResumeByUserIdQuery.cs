@@ -12,5 +12,7 @@ namespace Resume.Application.UseCases.Resume.Queries
     {
         public Guid UserId { get; set; }
         public string Token { get; set; }
+        public int PageIndex { get; set; }
+        public int Size { get; set; }
     }
 }

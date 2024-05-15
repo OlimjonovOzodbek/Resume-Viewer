@@ -10,5 +10,7 @@ namespace User.Application.UseCases.User.Queries
 {
     public class GetAllUsersQuery: IRequest<IEnumerable<UserModel>>
     {
+        public int PageIndex { get; set; }
+        public int Size { get; set; }
     }
 }
