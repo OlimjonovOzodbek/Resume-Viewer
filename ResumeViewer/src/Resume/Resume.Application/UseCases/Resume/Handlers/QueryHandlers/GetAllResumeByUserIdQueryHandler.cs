@@ -38,7 +38,7 @@ namespace Resume.Application.UseCases.Resume.Handlers.QueryHandlers
                     var user = JsonConvert.DeserializeObject<UserModel>(await response.Content.ReadAsStringAsync(cancellationToken));
 
                     var userResumes = await _context.Resumes
-                        .Skip(request.PageIndex)
+                        .Skip(request.PageIndex - 1)
                         .Take(request.Size)
                         .Where(r => r.UserId == request.UserId).ToListAsync(cancellationToken);
 

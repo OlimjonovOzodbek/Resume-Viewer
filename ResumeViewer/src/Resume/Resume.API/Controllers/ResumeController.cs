@@ -24,15 +24,6 @@ namespace Resume.API.Controllers
 
         [HttpPost]
         [Authorize(Roles = "User,SuperAdmin")]
-        public async Task<ResponseModel> CreateResume(CreateResumeCommand request)
-        {
-            var res = await _mediatr.Send(request);
-
-            return res;
-        }
-
-        [HttpPost]
-        [Authorize(Roles = "User,SuperAdmin")]
         public async Task<ResponseModel> UploadResume(UploadResumeCommand request)
         {
             var res = await _mediatr.Send(request);
@@ -93,6 +84,15 @@ namespace Resume.API.Controllers
             }
 
             return NotFound();
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin, SuperAdmin")]
+        public async Task<ResponseModel> GetResumeRate(Guid resumeId, string keywords)
+        {
+            var result = await _mediatr.Send(new GetRateResumeQuery { ResumeId = resumeId, Keywords = keywords });
+
+            return result;
         }
 
         [HttpDelete]
