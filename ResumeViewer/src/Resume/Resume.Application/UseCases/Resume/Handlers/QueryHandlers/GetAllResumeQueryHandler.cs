@@ -23,8 +23,8 @@ namespace Resume.Application.UseCases.Resume.Handlers.QueryHandlers
         public async Task<List<ResumeModel>> Handle(GetAllResumeQuery request, CancellationToken cancellationToken)
         {
             var resumes = await _context.Resumes
-                //.Skip(request.PageIndex)
-                //.Take(request.Size)
+                .Skip(request.PageIndex)
+                .Take(request.Size)
                 .ToListAsync(cancellationToken);
 
             return resumes;
