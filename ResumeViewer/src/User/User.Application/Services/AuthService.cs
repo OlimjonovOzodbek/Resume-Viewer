@@ -99,7 +99,7 @@ namespace User.Application.Services
 
             List<Claim> claims = new List<Claim>()
             {
-                new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti,user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat,EpochTime.GetIntDate(DateTime.UtcNow).ToString(CultureInfo.InvariantCulture),ClaimValueTypes.Integer64),
 
                 new Claim("UserName",user.Name!),

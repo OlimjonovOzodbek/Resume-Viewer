@@ -44,6 +44,31 @@ namespace Resume.Application.UseCases.Resume.Handlers.CommandHandlers
                             Status = 404
                         };
                     }
+
+                    if (System.IO.File.Exists(resume.Document))
+                    {
+                        try
+                        {
+                            System.IO.File.Delete(resume.Document);
+                        }
+                        catch (Exception ex)
+                        {
+                            return new ResponseModel
+                            {
+                                Message = $"Error deleting file: {ex.Message}",
+                                Status = 500
+                            };
+                        }
+                    }
+                    else
+                    {
+                        return new ResponseModel
+                        {
+                            Message = "Resume file not found!",
+                            Status = 404
+                        };
+                    }
+
                     _context.Resumes.Remove(resume);
                     await _context.SaveChangesAsync(cancellationToken);
 
@@ -54,7 +79,6 @@ namespace Resume.Application.UseCases.Resume.Handlers.CommandHandlers
                         isSuccess = true
                     };
                 }
-
                 else
                 {
                     return new ResponseModel
@@ -65,5 +89,6 @@ namespace Resume.Application.UseCases.Resume.Handlers.CommandHandlers
                 }
             }
         }
+
     }
 }
