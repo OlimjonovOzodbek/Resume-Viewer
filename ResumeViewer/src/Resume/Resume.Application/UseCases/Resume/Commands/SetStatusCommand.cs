@@ -1,3 +1,4 @@
+using iText.Kernel.Pdf.Tagging;
 using MediatR;
 using Resume.Domain.Entities.Models;
 using System;
@@ -11,6 +12,8 @@ namespace Resume.Application.UseCases.Resume.Commands
     public class SetStatusCommand : IRequest<ResponseModel>
     {
         public Guid ResumeId { get; set; }
+        public int Score { get; set; }
         public string Status { get; set; }
+        public string Token { get; set; }
     }
 }
