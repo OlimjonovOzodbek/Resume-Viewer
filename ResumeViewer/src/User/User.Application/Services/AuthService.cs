@@ -57,12 +57,15 @@ namespace User.Application.Services
                 await _context.Users.AddAsync(userr);
                 await _context.SaveChangesAsync(cancellationToken: default);
 
-                return new ResponceModel
+                var login = new LoginDTO
                 {
-                    Message = "You registered",
-                    Status = 201,
-                    isSuccess = true
+                    Email = userDTO.Email,
+                    Password = userDTO.Password
                 };
+
+                var result = await Login(login);
+
+                return result;
             }
 
             return new ResponceModel
